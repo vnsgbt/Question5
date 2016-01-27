@@ -10,10 +10,10 @@ public class DigitsInTimestamp {
     private long timestamp;
     private int digit;
 
-    public DigitsInTimestamp(int digit) {
+    public DigitsInTimestamp(long timestamp, int digit) {
+        this.timestamp = timestamp;
         this.digit = digit;
     }
-
 
     public int getDigit() {
         return digit;
@@ -31,41 +31,18 @@ public class DigitsInTimestamp {
         this.timestamp = timestamp;
     }
 
-    public long getShowTimesOf(long i) {
-//        return getOccurFromCounting(i);
-        return getOccurWithOptimalAlgo(i);
+    public long getOccur(long i) {
+        return getOccurInFirstDigit(i)
+                + getSumOfAllNineNumber(i)
+                + getOccurInRemaining(i);
     }
 
-    private long getOccurWithOptimalAlgo(long i) {
-        timestamp = i;
-        long occurs = getOccurInFirstDigit(timestamp);
-        occurs += occurFromNines(timestamp);
-        occurs += getOccurByRemainingNumber(timestamp);
-        return occurs;
-    }
-
-    private long getOccurByRemainingNumber(long input) {
-        String remainder = String.valueOf(input).substring(1);
-        return remainder.isEmpty() ? 0 : getOccurWithOptimalAlgo(Long.parseLong(remainder));
-    }
-
-    public long getOccurFromCounting(int i) {
-        digit = i;
-        long showTimes = 0;
-        for(int j = 1; j <= timestamp; j++){
-            showTimes += getOccurFromString(String.valueOf((j)));
+    private long getOccurInRemaining(long input) {
+        String remainderString = String.valueOf(input).substring(1);
+        if (remainderString.length() < 1) {
+            return 0;
         }
-        return showTimes;
-    }
-
-    private long getOccurFromString(String s) {
-        long showTimes = 0;
-        for (char c: s.toCharArray()) {
-            if (digit == c){
-                showTimes++;
-            }
-        }
-        return showTimes;
+        return getOccur(Long.parseLong(remainderString));
     }
 
     /**
@@ -75,8 +52,8 @@ public class DigitsInTimestamp {
      * ex: 777 => 9s number is 99 => total of (7 * 99)
      */
     protected long getSumOfAllNineNumber (long input) {
-
-        return 0;
+        int leadingDigit = Integer.parseInt(String.valueOf(input).substring(0,1));
+        return occurFromNines(input) * leadingDigit;
     }
 
     /** Nines numbers are in the form of 9(9*) and one digit less than input
@@ -89,20 +66,34 @@ public class DigitsInTimestamp {
         String remainder = String.valueOf(input).substring(1);
         if (remainder.isEmpty()) return 0;
         long nineNumberSize = remainder.length();
-        long occur = (long) (nineNumberSize * Math.pow(10,nineNumberSize-1));
-        return occur;
+        return (long) (nineNumberSize * Math.pow(10,nineNumberSize-1));
     }
 
     /** 4044 => 999 => 44 is the above number
      *  44 = input - ((999 + 1) * first digit)
      *  ********************************************************/
     protected long getOccurInFirstDigit(long input) {
-        int firstDigit = Integer.parseInt(String.valueOf(input).substring(0,1));
+        String inputString = String.valueOf(input);
+
+        if (inputString.length() == 1) {
+            return getDigit() <= input ? 1 : 0;
+        }
+
+        int firstDigit = Integer.parseInt(inputString.substring(0,1));
+        String remainder = inputString.substring(1);
         if (digit == firstDigit) {
-            long nineNumberSize = String.valueOf(input).substring(1).length();
-            long nineNumber = (long) (Math.pow(10,nineNumberSize) - 1);
-            return input - ((nineNumber + 1) * firstDigit) + 1;
+            return Long.parseLong(remainder) + 1;
+        }
+        else if (digit < firstDigit){
+            return (long) Math.pow(10,remainder.length());
         }
         return 0;
+    }
+
+    /** 4404 => 4000 is the input without remainder
+     * ***********************************************/
+    public long getOccurWithoutRemainder(long input) {
+        return getOccurInFirstDigit(input)
+                + getSumOfAllNineNumber(input);
     }
 }
