@@ -1,6 +1,7 @@
 package org.vnsgbt.infoplus;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -11,14 +12,17 @@ import org.testng.annotations.Test;
 
 public class DigitsInTimestampTest {
 
-    private String showHost;
-    private long timestamp;
+    private DigitsInTimestamp test;
+
+    @BeforeClass
+    public void setup () {
+        test = new DigitsInTimestamp(1);
+    }
 
     @Test(dataProvider = "provideNumbers")
     public void test(long number, int expected) {
-        timestamp = number;
-        DigitsInTimestamp test = new DigitsInTimestamp(expected);
         test.setTimestamp(number);
+        test.setDigit(1);
         Assert.assertEquals(test.getShowTimesOf(number),getOccurFromCounting(expected));
     }
 
@@ -29,19 +33,19 @@ public class DigitsInTimestampTest {
                 {299,2},
                 {399,3},
                 {4999,4},
-//                {9999,4000},
-//                {99999,50000},
-//                {999999,600000},
-//                {9999999,7000000},
-//                {99999999,80000000},
-//                {106571, getOccurFromCounting(7)},
+                /*{9999,4000},
+                {99999,50000},
+                {999999,600000},
+                {9999999,7000000},
+                {99999999,80000000},
+                {106571, getOccurFromCounting(7)},*/
         };
     }
 
     @Test(dataProvider = "inputNineNumbers")
     public void testNineNumber(long number, int expected) {
         DigitsInTimestamp test = new DigitsInTimestamp(expected);
-        Assert.assertEquals(test.getOccurByNineNumber(number),expected);
+        Assert.assertEquals(test.occurFromNines(number),expected);
     }
 
     @DataProvider(name = "inputNineNumbers")
@@ -55,10 +59,26 @@ public class DigitsInTimestampTest {
         };
     }
 
+    @Test(dataProvider = "getNinesOutOfThis")
+    public void ninesOf (long input, long expected) {
+
+    }
+
+    @DataProvider(name = "getNinesOutOfThis")
+    public static Object[][] getNinesOutOfThis() {
+        return new Object[][]{
+                {1234,999},
+                {31234,9999},
+                {551234,99999},
+                {6661234,999999},
+                {77771234,9999999},
+        };
+    }
+
     public long getOccurFromCounting(int i) {
-        showHost = String.valueOf(i);
+        test.setDigit(i);
         long showTimes = 0;
-        for(int j = 1; j <= timestamp; j++){
+        for(int j = 1; j <= test.getTimestamp(); j++){
             showTimes += getOccurFromString(String.valueOf((j)));
         }
         return showTimes;
@@ -67,7 +87,7 @@ public class DigitsInTimestampTest {
     private long getOccurFromString(String s) {
         long showTimes = 0;
         for (char c: s.toCharArray()) {
-            if (showHost.contains(String.valueOf(c))){
+            if (test.getDigit() == c){
                 showTimes++;
             }
         }

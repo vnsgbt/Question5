@@ -6,11 +6,29 @@ package org.vnsgbt.infoplus;
  */
 
 public class DigitsInTimestamp {
-    private long timestamp;
-    private String showHost;
 
-    public DigitsInTimestamp(int showHost) {
-        this.showHost = String.valueOf(showHost);
+    private long timestamp;
+    private int digit;
+
+    public DigitsInTimestamp(int digit) {
+        this.digit = digit;
+    }
+
+
+    public int getDigit() {
+        return digit;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setDigit(int digit) {
+        this.digit = digit;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public long getShowTimesOf(long i) {
@@ -21,7 +39,7 @@ public class DigitsInTimestamp {
     private long getOccurWithOptimalAlgo(long i) {
         timestamp = i;
         long occurs = getOccurInFirstDigit(timestamp);
-        occurs += getOccurByNineNumber(timestamp);
+        occurs += occurFromNines(timestamp);
         occurs += getOccurByRemainingNumber(timestamp);
         return occurs;
     }
@@ -32,7 +50,7 @@ public class DigitsInTimestamp {
     }
 
     public long getOccurFromCounting(int i) {
-        showHost = String.valueOf(i);
+        digit = i;
         long showTimes = 0;
         for(int j = 1; j <= timestamp; j++){
             showTimes += getOccurFromString(String.valueOf((j)));
@@ -43,11 +61,22 @@ public class DigitsInTimestamp {
     private long getOccurFromString(String s) {
         long showTimes = 0;
         for (char c: s.toCharArray()) {
-            if (showHost.contains(String.valueOf(c))){
+            if (digit == c){
                 showTimes++;
             }
         }
         return showTimes;
+    }
+
+    /**
+     * @param input: the number to be computed, ex: 777
+     * @return the occurrence of digit from counting all multiple of 9s number
+     *
+     * ex: 777 => 9s number is 99 => total of (7 * 99)
+     */
+    protected long getSumOfAllNineNumber (long input) {
+
+        return 0;
     }
 
     /** Nines numbers are in the form of 9(9*) and one digit less than input
@@ -56,7 +85,7 @@ public class DigitsInTimestamp {
      *  999 -> 300
      *  ...
      *  **********************************************************************/
-    protected long getOccurByNineNumber(long input) {
+    protected long occurFromNines(long input) {
         String remainder = String.valueOf(input).substring(1);
         if (remainder.isEmpty()) return 0;
         long nineNumberSize = remainder.length();
@@ -69,15 +98,11 @@ public class DigitsInTimestamp {
      *  ********************************************************/
     protected long getOccurInFirstDigit(long input) {
         int firstDigit = Integer.parseInt(String.valueOf(input).substring(0,1));
-        if (Integer.parseInt(showHost) == firstDigit) {
+        if (digit == firstDigit) {
             long nineNumberSize = String.valueOf(input).substring(1).length();
             long nineNumber = (long) (Math.pow(10,nineNumberSize) - 1);
             return input - ((nineNumber + 1) * firstDigit) + 1;
         }
         return 0;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 }
