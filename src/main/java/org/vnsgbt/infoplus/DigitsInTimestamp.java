@@ -31,6 +31,14 @@ public class DigitsInTimestamp {
         this.timestamp = timestamp;
     }
 
+    public void getOccurForAllDigits(){
+        for (int i = 1; i < 10; i++){
+            digit = i;
+            long showTimes = getOccur(timestamp);
+            System.out.println("\n " + digit + " => " + showTimes + " times.");
+        }
+    }
+
     public long getOccur(long i) {
         return getOccurInFirstDigit(i)
                 + getSumOfAllNineNumber(i)
@@ -81,7 +89,7 @@ public class DigitsInTimestamp {
 
         int firstDigit = Integer.parseInt(inputString.substring(0,1));
         String remainder = inputString.substring(1);
-        if (digit == firstDigit) {
+        if (firstDigit == digit) {
             return Long.parseLong(remainder) + 1;
         }
         else if (digit < firstDigit){
